@@ -493,7 +493,7 @@ export default function HeaderBanner({
               <button
                 type="button"
                 onClick={() => onDeleteProject(activeProjectId)}
-                className="text-[11px] font-semibold text-stone-400 hover:text-red-600 bg-red-50 hover:bg-red-100/50 px-2 py-1 rounded transition-colors cursor-pointer"
+                className="text-[11px] font-semibold text-stone-400 hover:text-red-600 bg-red-50 hover:bg-red-100/50 px-2 py-1 rounded transition-colors cursor-pointer ml-[3px] pl-[8px] mt-0"
                 title="刪除目前專案"
               >
                 🗑️ 刪除專案

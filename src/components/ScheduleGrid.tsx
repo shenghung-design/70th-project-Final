@@ -599,7 +599,7 @@ export default function ScheduleGrid({
                     </div>
                   </th>
                   <th className="px-4 py-3 w-[180px] text-center">備註</th>
-                  <th className="px-4 py-3 w-[170px] text-center">上傳附件</th>
+                  <th className="px-4 py-3 w-[170px] text-center">附件雲端網址</th>
                   <th className="px-4 py-3 w-20 text-center">刪除</th>
                 </tr>
               </thead>
@@ -902,68 +902,45 @@ export default function ScheduleGrid({
 
                         {/* Attachment Column */}
                         <td className="px-4 py-2.5">
-                          <div style={{ width: '104.443px' }} className="mx-auto flex justify-center">
-                            {item.attachmentUrl ? (
-                              <div style={{ width: '89.432px' }} className="flex items-center justify-between gap-1 bg-stone-50 border border-stone-200 rounded-md px-1.5 h-[30px]">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setPreviewAttachment({
-                                      name: item.attachmentName || '檔案',
-                                      url: item.attachmentUrl || ''
-                                    });
-                                    setImageLoadError(false);
-                                  }}
-                                  className="flex items-center gap-1 text-wood-dark hover:text-[#8B6D53] transition-all min-w-0 flex-1 text-left cursor-pointer focus:outline-none"
-                                  title={`預覽此附件: ${item.attachmentName || '檔案'}`}
-                                >
-                                  <Paperclip className="w-3 h-3 flex-shrink-0 text-wood-light" />
-                                  <span className="truncate underline decoration-dotted hover:decoration-solid text-[10px] font-bold text-stone-800 leading-tight">
-                                    {item.attachmentName || '檔案'}
-                                  </span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    onUpdateItem(item.id, {
-                                      attachmentName: '',
-                                      attachmentUrl: ''
-                                    });
-                                  }}
-                                  className="text-red-500 hover:text-red-700 hover:bg-red-50 p-0.5 rounded transition-all cursor-pointer flex-shrink-0 ml-0.5"
-                                  title="移除附件"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              </div>
-                            ) : (
-                              <label style={{ width: '89.432px' }} className="flex items-center justify-center gap-1 px-1.5 bg-white border border-dashed border-stone-300 hover:border-wood-dark text-stone-500 hover:text-wood-dark rounded-md cursor-pointer transition-all text-[10px] font-semibold h-[30px]">
-                                <Paperclip className="w-3 h-3 text-stone-400 flex-shrink-0" />
-                                <span className="truncate">上傳附件</span>
-                                <input
-                                  type="file"
-                                  className="hidden"
-                                  accept=".doc,.docx,.xls,.xlsx,.pdf,image/*"
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                      if (file.size > 700 * 1024) {
-                                        alert('因雲端儲存規範，附件檔案大小不能超過 700KB！建議上傳壓縮過的圖片或小型文檔。');
-                                        return;
-                                      }
-                                      const reader = new FileReader();
-                                      reader.onload = (event) => {
-                                        const base64 = event.target?.result as string;
-                                        onUpdateItem(item.id, {
-                                          attachmentName: file.name,
-                                          attachmentUrl: base64
-                                        });
-                                      };
-                                      reader.readAsDataURL(file);
+                          <div className="flex items-center gap-1 justify-center w-full min-w-[130px]">
+                            <input
+                              type="text"
+                              value={item.attachmentUrl || ''}
+                              onChange={(e) => {
+                                const url = e.target.value;
+                                let name = '';
+                                if (url) {
+                                  if (url.includes('drive.google.com')) {
+                                    name = 'Google 雲端';
+                                  } else if (url.includes('docs.google.com')) {
+                                    name = 'Google 文件';
+                                  } else {
+                                    try {
+                                      const hostname = new URL(url).hostname;
+                                      name = hostname.replace('www.', '');
+                                    } catch (err) {
+                                      name = '雲端連結';
                                     }
-                                  }}
-                                />
-                              </label>
+                                  }
+                                }
+                                onUpdateItem(item.id, {
+                                  attachmentUrl: url,
+                                  attachmentName: name
+                                });
+                              }}
+                              placeholder="貼上雲端網址..."
+                              className="bg-stone-50 hover:bg-white focus:bg-white focus:outline-none border border-stone-200 focus:border-wood-dark px-2 py-1 text-[11px] rounded-md w-full font-medium transition-all text-text-main placeholder:text-stone-400"
+                            />
+                            {item.attachmentUrl && (
+                              <a
+                                href={item.attachmentUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-shrink-0 p-1 rounded hover:bg-stone-100 text-wood-dark hover:text-[#8B6D53] transition-all cursor-pointer"
+                                title="在新分頁開啟雲端連結"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                              </a>
                             )}
                           </div>
                         </td>
